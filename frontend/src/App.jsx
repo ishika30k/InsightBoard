@@ -1,5 +1,9 @@
+import AppRouter from "./Router/AppRouter";
+
 function App() {
-  return <h1>InsightBoard</h1>;
+  return <AppRouter />;
 }
 
 export default App;
+
+
