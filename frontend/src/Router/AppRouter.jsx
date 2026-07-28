@@ -8,6 +8,7 @@ import Projects from "../Pages/Projects";
 import Analytics from "../Pages/Analytics";
 import Profile from "../Pages/Profile";
 import Login from "../Pages/Login";
+import Counter from "../Pages/Counter";
 
 const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = () => {
           <Route path="/projects" element={<Projects />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/counter" element={<Counter />} />
         </Route>
       </Routes>
     </BrowserRouter>

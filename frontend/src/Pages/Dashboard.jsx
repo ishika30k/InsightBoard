@@ -1,6 +1,7 @@
 import StatCard from "../Components/Dashboard/Statcard"
 import RecentProjects from "../Components/Dashboard/RecentProjects";
 import ActivityFeed from "../Components/Dashboard/ActivityFeed";
+import { useEffect, useState } from "react";
 import {
   DollarSign,
   Users,
@@ -35,29 +36,6 @@ const stats = [
   },
 ];
 
-const projects = [
-  {
-    name: "Portfolio Website",
-    client: "John Smith",
-    status: "Completed",
-  },
-  {
-    name: "E-commerce Store",
-    client: "ABC Fashion",
-    status: "In Progress",
-  },
-  {
-    name: "CRM Dashboard",
-    client: "Tech Solutions",
-    status: "Pending",
-  },
-  {
-    name: "Restaurant App",
-    client: "Foodies",
-    status: "Completed",
-  },
-];
-
 const activities = [
   {
     message: "New customer registered",
@@ -78,6 +56,33 @@ const activities = [
 ];
 
 const Dashboard = () => {
+
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/projects")
+      .then((response) => response.json())
+      .then((data) => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setError("Failed to load projects.");
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (error) {
+    return <h1>{error}</h1>;
+  }
+
   return (
     <div>
       <h1 className="text-3xl font-bold text-slate-800">
