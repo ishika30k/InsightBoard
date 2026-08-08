@@ -1,6 +1,8 @@
 import StatCard from "../Components/Dashboard/Statcard"
 import RecentProjects from "../Components/Dashboard/RecentProjects";
 import ActivityFeed from "../Components/Dashboard/ActivityFeed";
+import AddProjectForm from "../Components/Dashboard/AddProjectForm";
+import EditProjectForm from "../Components/Dashboard/EditProjectForm";
 import { useEffect, useState } from "react";
 import {
   DollarSign,
@@ -60,8 +62,40 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingProject, setEditingProject] = useState(null);
 
-  useEffect(() => {
+const handleDelete = async (projectId) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this project?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/api/projects/${projectId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
+
+    fetchProjects();
+  } catch (error) {
+    console.error("Error deleting project:", error);
+  }
+};
+
+const handleEdit = (project) => {
+  setEditingProject(project);
+};
+
+  const fetchProjects = () => {
     fetch("http://127.0.0.1:5000/api/projects")
       .then((response) => response.json())
       .then((data) => {
@@ -73,6 +107,10 @@ const Dashboard = () => {
         setError("Failed to load projects.");
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchProjects();
   }, []);
 
   if (loading) {
@@ -103,12 +141,31 @@ const Dashboard = () => {
             />
         ))}
         </div>
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
-                <RecentProjects projects={projects} />
-            </div>
+        <div className="mt-8">
+          {editingProject ? (
+            <EditProjectForm
+              project={editingProject}
+              onProjectUpdated={() => {
+                setEditingProject(null);
+                fetchProjects();
+              }}
+              onCancel={() => setEditingProject(null)}
+            />
+          ) : (
+            <AddProjectForm onProjectAdded={fetchProjects} />
+          )}
+        </div>
 
-            <ActivityFeed activities={activities} />
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <RecentProjects
+              projects={projects}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </div>
+
+          <ActivityFeed activities={activities} />
         </div>
     </div>
   );
